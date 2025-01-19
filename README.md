@@ -1,19 +1,27 @@
-# nvim
-#nvim arch linux
+# my config Nvim
 
-## my config arch linux neovim
-clone repo
+## 🛠️ Installation
 
-```bash
-git clone --depth 1 https://github.com/vremyavnikuda/nvim ~/.config/nvim
+#### Make a backup of your current nvim and shared folder
+
+```shell
+mv ~/.config/nvim ~/.config/nvim.bak
+mv ~/.local/share/nvim ~/.local/share/nvim.bak
+mv ~/.local/state/nvim ~/.local/state/nvim.bak
+mv ~/.cache/nvim ~/.cache/nvim.bak
 ```
 
-delete .git
 
-```bash
-rm -rf ~/config/nvim/.git
+#### Clone the repository
+
+```shell
+git clone https://github.com/vremyavnikuda/nvim ~/.config/nvim
 ```
+```shell
+sudo rm -rf ~/.config/nvim/.git
+```
+#### Start Neovim
 
-```bash
+```shell
 nvim
-``` 
+```
