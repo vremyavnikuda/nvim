@@ -15,7 +15,7 @@ mv ~/.cache/nvim ~/.cache/nvim.bak
 #### Clone the repository
 
 ```shell
-git clone https://github.com/vremyavnikuda/nvim ~/.config/nvim
+git clone https://github.com/vremyavnikuda/nvim.git ~/.config/nvim
 ```
 ```shell
 sudo rm -rf ~/.config/nvim/.git
