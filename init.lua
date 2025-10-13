@@ -17,7 +17,3 @@ end
 
 require "lazy_setup"
 require "polish"
-require("copilot").setup({
-  suggestion = { enabled = false },
-  panel = { enabled = false },
-})

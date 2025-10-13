@@ -1,38 +1,58 @@
-if true then return {} end -- WARN: REMOVE THIS LINE TO ACTIVATE THIS FILE
-
--- Customize Mason plugins
-
 ---@type LazySpec
 return {
-  -- use mason-lspconfig to configure LSP installations
   {
     "williamboman/mason-lspconfig.nvim",
-    -- overrides `require("mason-lspconfig").setup(...)`
     opts = {
       ensure_installed = {
         "lua_ls",
-        -- add more arguments for adding more language servers
+        "rust_analyzer",
+        "clangd",
+        "gopls",
+        "ts_ls",
+        "marksman",
+        "taplo",
+        "jsonls",
+        "yamlls",
+        "bashls",
       },
     },
   },
-  -- use mason-null-ls to configure Formatters/Linter installation for null-ls sources
   {
     "jay-babu/mason-null-ls.nvim",
-    -- overrides `require("mason-null-ls").setup(...)`
     opts = {
       ensure_installed = {
         "stylua",
-        -- add more arguments for adding more null-ls sources
+        "prettier",
+        "prettierd",
+        "clang-format",
+        "gofmt",
+        "goimports",
+        "goimports-reviser",
+        "golines",
+        "golangci-lint",
+        "rustfmt",
+        "eslint_d",
+        "biome",
+        "markdownlint",
+        "markdown-toc",
+        "shfmt",
+        "shellcheck",
       },
     },
   },
   {
     "jay-babu/mason-nvim-dap.nvim",
-    -- overrides `require("mason-nvim-dap").setup(...)`
     opts = {
       ensure_installed = {
-        "python",
-        -- add more arguments for adding more debuggers
+        "codelldb",
+        "delve",
+        "js-debug-adapter",
+        "cpptools",
+      },
+      handlers = {
+        function(config)
+          require("mason-nvim-dap").default_setup(config)
+        end,
       },
     },
   },

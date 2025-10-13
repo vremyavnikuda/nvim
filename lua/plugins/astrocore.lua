@@ -1,9 +1,3 @@
-if true then return {} end -- WARN: REMOVE THIS LINE TO ACTIVATE THIS FILE
-
--- AstroCore provides a central place to modify mappings, vim options, autocommands, and more!
--- Configuration documentation can be found with `:h astrocore`
--- NOTE: We highly recommend setting up the Lua Language Server (`:LspInstall lua_ls`)
---       as this provides autocomplete and documentation while editing
 
 ---@type LazySpec
 return {
@@ -42,15 +36,10 @@ return {
     -- Mappings can be configured through AstroCore as well.
     -- NOTE: keycodes follow the casing in the vimdocs. For example, `<Leader>` must be capitalized
     mappings = {
-      -- first key is the mode
       n = {
-        -- second key is the lefthand side of the map
-
-        -- navigate buffer tabs
         ["]b"] = { function() require("astrocore.buffer").nav(vim.v.count1) end, desc = "Next buffer" },
         ["[b"] = { function() require("astrocore.buffer").nav(-vim.v.count1) end, desc = "Previous buffer" },
 
-        -- mappings seen under group name "Buffer"
         ["<Leader>bd"] = {
           function()
             require("astroui.status.heirline").buffer_picker(
@@ -60,12 +49,34 @@ return {
           desc = "Close buffer from tabline",
         },
 
-        -- tables with just a `desc` key will be registered with which-key if it's installed
-        -- this is useful for naming menus
-        -- ["<Leader>b"] = { desc = "Buffers" },
+        ["<Leader>d"] = { desc = "Debugger" },
+        ["<Leader>db"] = { function() require("dap").toggle_breakpoint() end, desc = "Toggle Breakpoint" },
+        ["<Leader>dB"] = { function() require("dap").set_breakpoint(vim.fn.input "Breakpoint condition: ") end, desc = "Conditional Breakpoint" },
+        ["<Leader>dc"] = { function() require("dap").continue() end, desc = "Continue" },
+        ["<Leader>di"] = { function() require("dap").step_into() end, desc = "Step Into" },
+        ["<Leader>do"] = { function() require("dap").step_over() end, desc = "Step Over" },
+        ["<Leader>dO"] = { function() require("dap").step_out() end, desc = "Step Out" },
+        ["<Leader>dq"] = { function() require("dap").close() end, desc = "Close Session" },
+        ["<Leader>dQ"] = { function() require("dap").terminate() end, desc = "Terminate" },
+        ["<Leader>dp"] = { function() require("dap").pause() end, desc = "Pause" },
+        ["<Leader>dr"] = { function() require("dap").restart_frame() end, desc = "Restart" },
+        ["<Leader>dR"] = { function() require("dap").repl.toggle() end, desc = "Toggle REPL" },
+        ["<Leader>ds"] = { function() require("dap").run_to_cursor() end, desc = "Run To Cursor" },
+        ["<Leader>du"] = { function() require("dapui").toggle() end, desc = "Toggle Debugger UI" },
+        ["<Leader>dh"] = { function() require("dap.ui.widgets").hover() end, desc = "Debugger Hover" },
 
-        -- setting a mapping to false will disable it
-        -- ["<C-S>"] = false,
+        ["<Leader>m"] = { desc = "Markdown" },
+        ["<Leader>mp"] = { "<cmd>MarkdownPreview<cr>", desc = "Markdown Preview" },
+        ["<Leader>ms"] = { "<cmd>MarkdownPreviewStop<cr>", desc = "Stop Markdown Preview" },
+        ["<Leader>mt"] = { "<cmd>MarkdownPreviewToggle<cr>", desc = "Toggle Markdown Preview" },
+
+        ["<Leader>lh"] = { function() vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled()) end, desc = "Toggle Inlay Hints" },
+        
+        ["K"] = { function() vim.lsp.buf.hover() end, desc = "Hover Documentation" },
+        ["gd"] = { function() vim.lsp.buf.definition() end, desc = "Go to Definition" },
+        ["gr"] = { function() vim.lsp.buf.references() end, desc = "Go to References" },
+        ["gi"] = { function() vim.lsp.buf.implementation() end, desc = "Go to Implementation" },
+        ["<Leader>D"] = { function() vim.lsp.buf.type_definition() end, desc = "Type Definition" },
       },
     },
   },
