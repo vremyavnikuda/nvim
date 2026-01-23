@@ -1,16 +1,6 @@
 # my config Nvim
 
-## 🛠️ Installation
-
-#### Make a backup of your current nvim and shared folder
-
-```shell
-mv ~/.config/nvim ~/.config/nvim.bak
-mv ~/.local/share/nvim ~/.local/share/nvim.bak
-mv ~/.local/state/nvim ~/.local/state/nvim.bak
-mv ~/.cache/nvim ~/.cache/nvim.bak
-```
-
+## Installation
 
 #### Clone the repository
 
@@ -20,8 +10,31 @@ git clone https://github.com/vremyavnikuda/nvim.git ~/.config/nvim
 ```shell
 sudo rm -rf ~/.config/nvim/.git
 ```
+
 #### Start Neovim
 
 ```shell
 nvim
 ```
+
+## Dependencies
+
+Required
+- neovim 0.11+
+- git
+
+LSP
+- clangd
+- rust-analyzer
+- gopls
+
+Formatters
+- astyle
+- rustfmt
+- gofmt
+
+Tools
+- rg (ripgrep) for Telescope live_grep
+
+Optional
+- Nerd Font for nvim-web-devicons icons
