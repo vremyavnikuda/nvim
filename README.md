@@ -38,3 +38,8 @@ Tools
 
 Optional
 - Nerd Font for nvim-web-devicons icons
+
+## Key Map
+
+- [Keybindings (English)](doc/keybindings.en.md)
+- [キーバインド (日本語)](doc/keybindings.ja.md)
