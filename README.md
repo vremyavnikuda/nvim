@@ -1,5 +1,7 @@
 # my config Nvim
 
+![screenshot](img/hyprshot_90113.png)
+
 ## Installation
 
 #### Clone the repository
