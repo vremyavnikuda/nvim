@@ -10,7 +10,7 @@
 | `<leader>nn` | Create a new file |
 | `<leader>fd` | Delete the current file with confirmation |
 
-### 🔍 Additional in file search (`<leader>ff`):
+### Additional in file search (`<leader>ff`):
 - `Enter` - open in the current window
 - `h` - open in a horizontal split
 - `v` - open in a vertical split  
