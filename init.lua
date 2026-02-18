@@ -15,6 +15,7 @@ vim.opt.rtp:prepend(lazypath)
 
 vim.g.mapleader = " "
 
+-- Core options
 vim.opt.number = true
 vim.opt.relativenumber = true
 vim.opt.expandtab = true
@@ -25,8 +26,10 @@ vim.opt.termguicolors = true
 vim.opt.splitright = true
 vim.opt.splitbelow = true
 
+-- Smart window sizing
 local autocmd = vim.api.nvim_create_autocmd
 
+-- Intelligent split resizing
 local smart_resize = function()
   local total_width = vim.o.columns
   local total_height = vim.o.lines
@@ -36,12 +39,18 @@ local smart_resize = function()
     return
   end
   
+  -- Get layout information
   local win_id = vim.api.nvim_get_current_win()
   local win_config = vim.api.nvim_win_get_config(win_id)
+  
+  -- Check if we have vertical or horizontal splits
   local has_vertical_splits = false
   local has_horizontal_splits = false
+  
   for _, win in ipairs(vim.api.nvim_list_wins()) do
     local win_pos = vim.fn.win_screenpos(win)
+    -- Simple detection: if windows have different row positions, there are horizontal splits
+    -- if different column positions, there are vertical splits
     if win ~= win_id then
       local other_pos = vim.fn.win_screenpos(win)
       if win_pos[1] ~= other_pos[1] then
@@ -53,21 +62,25 @@ local smart_resize = function()
     end
   end
   
+  -- Handle vertical splits
   if has_vertical_splits then
     if win_count == 2 then
-      local optimal_width = math.floor((total_width - 2) / 2)
+      -- Two windows side by side - equal split
+      local optimal_width = math.floor((total_width - 2) / 2) -- Leave space for borders
       vim.cmd("vertical resize " .. optimal_width)
     else
+      -- Multiple windows - more compact
       local optimal_width = math.floor((total_width - 4) / win_count)
       vim.cmd("vertical resize " .. optimal_width)
     end
   end
   
+  -- Handle horizontal splits
   if has_horizontal_splits then
-    local available_height = total_height - 3
+    local available_height = total_height - 3 -- Leave space for status line and command line
     local optimal_height = math.floor(available_height / math.ceil(win_count / 2))
     
-    if optimal_height > 8 then
+    if optimal_height > 8 then -- Minimum usable height
       vim.cmd("resize " .. optimal_height)
     end
   end
@@ -80,10 +93,12 @@ autocmd("WinNew", {
 
 autocmd("VimResized", {
   callback = function()
+    -- Debounce to avoid excessive calls
     local timer = vim.loop.new_timer()
     timer:start(100, 0, vim.schedule_wrap(function()
       smart_resize()
-      vim.cmd("wincall =")
+      -- Also execute builtin equalize for better results
+      vim.cmd("wincmd =")
       timer:close()
     end))
   end,
@@ -145,6 +160,8 @@ require("lazy").setup({
       local pickers = require("telescope.pickers")
       local finders = require("telescope.finders")
       local conf = require("telescope.config").values
+      
+      -- Custom actions for opening files in different directions
       local open_file_horizontal = function(prompt_bufnr)
         local selection = action_state.get_selected_entry()
         actions.close(prompt_bufnr)
@@ -179,6 +196,7 @@ require("lazy").setup({
         vim.cmd("edit " .. selection.value)
       end
       
+      -- Create new file function
       local create_new_file = function(prompt_bufnr, direction)
         actions.close(prompt_bufnr)
         local filename = vim.fn.input("New file name: ")
@@ -197,6 +215,7 @@ require("lazy").setup({
         end
       end
       
+      -- Create custom command - simplified
       vim.api.nvim_create_user_command("TelescopeFindFilesEnhanced", function(opts)
         local pickers = require("telescope.pickers")
         local finders = require("telescope.finders")
@@ -270,8 +289,10 @@ require("lazy").setup({
         on_attach = function(bufnr)
           local api = require('nvim-tree.api')
           
+          -- Default mappings
           api.config.mappings.default_on_attach(bufnr)
           
+          -- Custom mappings for smart splits
           vim.keymap.set('n', '<CR>', api.node.open.edit, { buffer = bufnr, desc = "Open" })
           vim.keymap.set('n', '<M-CR>', function()
             api.node.open.horizontal()
@@ -301,6 +322,26 @@ require("lazy").setup({
       require("ibl").setup({
         scope = { enabled = true },
         indent = { char = "│" },
+      })
+    end,
+  },
+  {
+    "shellRaining/hlchunk.nvim",
+    lazy = false,
+    config = function()
+      require("hlchunk").setup({
+        chunk = {
+          enable = true,
+          use_treesitter = false,
+          notify = true,
+          style = {
+            { fg = "#e6c384" },
+            { fg = "#e82424" },
+          },
+        },
+        indent = { enable = false },
+        line_num = { enable = false },
+        blank = { enable = false },
       })
     end,
   },
@@ -369,6 +410,12 @@ require("lazy").setup({
     end,
   },
   {
+    "aikhe/wrapped.nvim",
+    dependencies = { "nvzone/volt", "nvim-lua/plenary.nvim" },
+    cmd = { "NvimWrapped" },
+    opts = {},
+  },
+  {
     "hrsh7th/nvim-cmp",
     dependencies = {
       "hrsh7th/cmp-nvim-lsp",
@@ -430,6 +477,7 @@ require("lazy").setup({
   },
 })
 
+-- Navigation keymaps
 local map = vim.keymap.set
 map("n", "<leader>ff", "<cmd>TelescopeFindFilesEnhanced<cr>", { desc = "Find files with directions" })
 map("n", "<leader>fg", "<cmd>Telescope live_grep<cr>", { desc = "Live grep" })
@@ -437,21 +485,24 @@ map("n", "<leader>fb", "<cmd>Telescope buffers<cr>", { desc = "Buffers" })
 map("n", "<leader>fh", "<cmd>Telescope help_tags<cr>", { desc = "Help" })
 map("n", "<leader>t", "<cmd>Telescope<cr>", { desc = "Telescope menu" })
 
+-- Code navigation shortcuts
 map("n", "<leader>sf", "<cmd>Telescope current_buffer_fuzzy_find<cr>", { desc = "Search in current file" })
 map("n", "<leader>sg", "<cmd>Telescope grep_string<cr>", { desc = "Search word under cursor" })
 map("n", "<leader>sr", "<cmd>Telescope lsp_references<cr>", { desc = "Find references" })
 map("n", "<leader>sd", "<cmd>Telescope lsp_document_symbols<cr>", { desc = "Document symbols" })
 map("n", "<leader>sw", "<cmd>Telescope lsp_workspace_symbols<cr>", { desc = "Workspace symbols" })
 map("n", "<leader>si", "<cmd>Telescope lsp_implementations<cr>", { desc = "Find implementations" })
-map("n", "<leader>sd", "<cmd>Telescope lsp_definitions<cr>", { desc = "Find definitions" })
+map("n", "<leader>sD", "<cmd>Telescope lsp_definitions<cr>", { desc = "Find definitions" })
 map("n", "<leader>e", "<cmd>NvimTreeFocus<cr>", { desc = "Focus project tree" })
 map("n", "<leader>E", "<cmd>NvimTreeToggle<cr>", { desc = "Toggle project tree" })
 
+-- Window navigation with Alt+arrows
 map("n", "<M-Left>", "<C-w>h", { desc = "Navigate left" })
 map("n", "<M-Right>", "<C-w>l", { desc = "Navigate right" })
 map("n", "<M-Up>", "<C-w>k", { desc = "Navigate up" })
 map("n", "<M-Down>", "<C-w>j", { desc = "Navigate down" })
 
+-- Smart split management
 map("n", "<leader>ss", function()
   local total_height = vim.o.lines - 3
   vim.cmd("split")
@@ -466,13 +517,15 @@ end, { desc = "Smart vertical split" })
 
 map("n", "<leader>qc", "<cmd>close<cr>", { desc = "Close current window" })
 
+-- Auto-resize all windows evenly
 map("n", "<leader>ar", function()
   local win_count = #vim.api.nvim_list_wins()
   if win_count > 1 then
-    vim.cmd("wincall =")
+    vim.cmd("wincmd =")
   end
 end, { desc = "Auto-resize all windows" })
 
+-- Create new file
 map("n", "<leader>nn", function()
   local filename = vim.fn.input("New file: ")
   if filename ~= "" then
@@ -480,6 +533,7 @@ map("n", "<leader>nn", function()
   end
 end, { desc = "Create new file" })
 
+-- Delete current file
 map("n", "<leader>fd", function()
   local current_file = vim.fn.expand("%:p")
   if current_file == "" then
@@ -502,7 +556,9 @@ end, { desc = "Format buffer" })
 map("n", "]h", "<cmd>Gitsigns next_hunk<cr>", { desc = "Next git hunk" })
 map("n", "[h", "<cmd>Gitsigns prev_hunk<cr>", { desc = "Prev git hunk" })
 map("n", "<leader>gg", "<cmd>Neogit<cr>", { desc = "Neogit" })
+map("n", "<leader>nw", "<cmd>NvimWrapped<cr>", { desc = "Nvim Wrapped" })
 
+-- Inlay hints toggle with debug info
 map("n", "<leader>ih", function()
   local clients = vim.lsp.get_clients({ name = "rust_analyzer" })
   local has_rust_analyzer = clients and #clients > 0
@@ -517,9 +573,12 @@ map("n", "<leader>ih", function()
   vim.notify("Inlay hints now: " .. (new_status and "enabled" or "disabled"), vim.log.levels.INFO)
 end, { desc = "Toggle inlay hints with debug" })
 
+-- Built-in LSP (Neovim 0.11+)
 if vim.lsp and vim.lsp.config then
+  -- Debug LSP setup
   vim.lsp.config("clangd", {})
   
+  -- Simple rust-analyzer config for now
   vim.lsp.config("rust_analyzer", {
     settings = {
       ["rust-analyzer"] = {
@@ -544,6 +603,7 @@ if vim.lsp and vim.lsp.config then
     vim.notify("LSP error: " .. err, vim.log.levels.ERROR)
   end
   
+  -- LSP keymaps
   local lsp_map = function(bufnr)
     local bufopts = { noremap=true, silent=true, buffer=bufnr }
     vim.keymap.set('n', 'gd', vim.lsp.buf.definition, bufopts)
@@ -561,16 +621,20 @@ if vim.lsp and vim.lsp.config then
     vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, bufopts)
   end
   
+  -- Apply LSP keymaps when LSP attaches
   vim.api.nvim_create_autocmd("LspAttach", {
     group = vim.api.nvim_create_augroup("UserLspConfig", {}),
     callback = function(args)
       lsp_map(args.buf)
+      
+      -- Enable inlay hints for Rust immediately after LSP attaches
       if vim.bo[args.buf].filetype == "rust" then
         vim.lsp.inlay_hint.enable(true)
       end
     end,
   })
   
+  -- Also enable when entering Rust buffer (fallback)
   vim.api.nvim_create_autocmd({ "BufEnter", "BufWinEnter" }, {
     group = vim.api.nvim_create_augroup("RustInlayHints", {}),
     pattern = "*.rs",

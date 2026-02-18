@@ -43,5 +43,5 @@ Optional
 
 ## Key Map
 
-- [Keybindings (English)](doc/keybindings.en.md)
+- [Keybindings (English)](doc/keybindings.md)
 - [キーバインド (日本語)](doc/keybindings.ja.md)
