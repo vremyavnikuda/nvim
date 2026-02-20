@@ -49,8 +49,6 @@ local smart_resize = function()
   
   for _, win in ipairs(vim.api.nvim_list_wins()) do
     local win_pos = vim.fn.win_screenpos(win)
-    -- Simple detection: if windows have different row positions, there are horizontal splits
-    -- if different column positions, there are vertical splits
     if win ~= win_id then
       local other_pos = vim.fn.win_screenpos(win)
       if win_pos[1] ~= other_pos[1] then
@@ -65,11 +63,9 @@ local smart_resize = function()
   -- Handle vertical splits
   if has_vertical_splits then
     if win_count == 2 then
-      -- Two windows side by side - equal split
-      local optimal_width = math.floor((total_width - 2) / 2) -- Leave space for borders
+      local optimal_width = math.floor((total_width - 2) / 2)
       vim.cmd("vertical resize " .. optimal_width)
     else
-      -- Multiple windows - more compact
       local optimal_width = math.floor((total_width - 4) / win_count)
       vim.cmd("vertical resize " .. optimal_width)
     end
@@ -77,10 +73,10 @@ local smart_resize = function()
   
   -- Handle horizontal splits
   if has_horizontal_splits then
-    local available_height = total_height - 3 -- Leave space for status line and command line
+    local available_height = total_height - 3
     local optimal_height = math.floor(available_height / math.ceil(win_count / 2))
     
-    if optimal_height > 8 then -- Minimum usable height
+    if optimal_height > 8 then
       vim.cmd("resize " .. optimal_height)
     end
   end
@@ -93,11 +89,9 @@ autocmd("WinNew", {
 
 autocmd("VimResized", {
   callback = function()
-    -- Debounce to avoid excessive calls
     local timer = vim.loop.new_timer()
     timer:start(100, 0, vim.schedule_wrap(function()
       smart_resize()
-      -- Also execute builtin equalize for better results
       vim.cmd("wincmd =")
       timer:close()
     end))
@@ -160,8 +154,6 @@ require("lazy").setup({
       local pickers = require("telescope.pickers")
       local finders = require("telescope.finders")
       local conf = require("telescope.config").values
-      
-      -- Custom actions for opening files in different directions
       local open_file_horizontal = function(prompt_bufnr)
         local selection = action_state.get_selected_entry()
         actions.close(prompt_bufnr)
@@ -627,7 +619,6 @@ if vim.lsp and vim.lsp.config then
     callback = function(args)
       lsp_map(args.buf)
       
-      -- Enable inlay hints for Rust immediately after LSP attaches
       if vim.bo[args.buf].filetype == "rust" then
         vim.lsp.inlay_hint.enable(true)
       end
